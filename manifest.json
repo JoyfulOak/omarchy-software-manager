@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.joyfuloak.omarchy-software-manager",
+  "name": "Software",
+  "version": "0.1.0",
+  "author": "JoyfulOak",
+  "license": "MIT",
+  "description": "Browse installed Arch, AUR, and Flatpak software, check for updates, and uninstall apps.",
+  "kinds": ["bar-widget", "panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "barWidget": "BarWidget.qml",
+    "panel": "Expanded.qml"
+  },
+  "barWidget": {
+    "displayName": "Software",
+    "description": "Manage installed apps, updates, and package sources.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
