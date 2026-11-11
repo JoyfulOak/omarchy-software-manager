@@ -100,7 +100,7 @@ Item {
   }
 
   function requestNativeUpdates() {
-    if (nativeUpdates === 0) return
+    if (totalUpdates === 0) return
     pendingApp = null
     pendingAction = "native-update"
   }
@@ -115,8 +115,8 @@ Item {
       pendingAction = ""
       // Arch does not support safe partial upgrades. Use the user's configured
       // terminal so yay can show its transaction summary and ask before changes.
-      Quickshell.execDetached(["omarchy", "launch", "tui", "yay", "-Syu"])
-      setStatus("Opened a terminal for the full Arch/AUR system upgrade.")
+      Quickshell.execDetached(["omarchy", "launch", "tui", "/usr/bin/python3", helperPath, "upgrade-all"])
+      setStatus("Opened a terminal for Arch/AUR and Flatpak updates.")
       pendingApp = null
       return
     }
@@ -273,7 +273,7 @@ Item {
           Item { width: 1; height: 1 }
           Rectangle {
             anchors.verticalCenter: parent.verticalCenter
-            width: Style.space(88)
+            width: Style.space(150)
             height: Style.space(32)
             color: "transparent"
             border.color: Util.alpha(root.foreground, 0.35)
@@ -281,7 +281,7 @@ Item {
             radius: Style.cornerRadius
             Text {
               anchors.centerIn: parent
-              text: "Refresh"
+              text: "Check for updates"
               textFormat: Text.PlainText
               color: root.foreground
               font.family: Style.font.family
@@ -361,7 +361,7 @@ Item {
             Text {
               id: nativeUpdateLabel
               anchors.centerIn: parent
-              text: "Update Arch/AUR (" + root.nativeUpdates + ")"
+              text: "Update All (" + root.totalUpdates + ")"
               textFormat: Text.PlainText
               color: OmarchyTheme.Color.accent
               font.family: Style.font.family
@@ -589,7 +589,7 @@ Item {
               text: root.pendingAction === "uninstall"
                 ? "Remove “" + (root.pendingApp ? root.pendingApp.name : "") + "” (" + (root.pendingApp ? root.pendingApp.type : "") + ") from " + (root.pendingApp ? root.pendingApp.location : "") + "? User data is not explicitly deleted."
                 : root.pendingAction === "native-update"
-                  ? "Arch/AUR packages require a full system upgrade, not a partial app-only upgrade. Software will open yay in your terminal so you can review its transaction before approving it."
+                  ? "Software will open a terminal to upgrade Arch/AUR packages and Flatpaks. Review each transaction before approving it."
                   : root.pendingAction === "flatpak-update-all"
                     ? "Update all Flatpak apps in their existing user and system installations? System updates may ask for authorization."
                     : "Update “" + (root.pendingApp ? root.pendingApp.name : "") + "” in its existing Flatpak installation?"

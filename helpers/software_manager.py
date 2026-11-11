@@ -217,6 +217,22 @@ def main(argv: list[str]) -> int:
         result = inventory()
     elif argv[0] == "updates":
         result = updates()
+    elif argv[0] == "upgrade-all":
+        steps = []
+        if shutil.which("yay"):
+            steps.append(["yay", "-Syu"])
+        elif shutil.which("pacman"):
+            steps.append(["sudo", "pacman", "-Syu"])
+        if shutil.which("flatpak"):
+            steps.extend([["flatpak", "update", "--user"], ["flatpak", "update", "--system"]])
+        for command in steps:
+            print("\nRunning " + " ".join(command), flush=True)
+            completed = subprocess.run(command, check=False)
+            if completed.returncode != 0:
+                print(f"{command[0]} exited with status {completed.returncode}; remaining sources were skipped.", flush=True)
+                break
+        input("Press Enter to close…")
+        return 0
     elif argv[0] == "flatpak-update" and len(argv) == 3:
         try:
             outcomes = []
