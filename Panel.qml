@@ -152,6 +152,7 @@ Item {
           type: String(app.type), source: String(app.source), location: String(app.location)
         })
       }
+      filterApps()
       if (result.errors && result.errors.length)
         setStatus(result.errors.join(" · "))
       else
@@ -185,7 +186,23 @@ Item {
   }
 
   ListModel { id: appsModel }
+  ListModel { id: visibleAppsModel }
   ListModel { id: updatesModel }
+
+  onSearchTextChanged: filterApps()
+  onSourceFilterChanged: filterApps()
+
+  function filterApps() {
+    visibleAppsModel.clear()
+    for (var i = 0; i < appsModel.count; i++) {
+      var app = appsModel.get(i)
+      if (matches(app)) visibleAppsModel.append({
+        appId: app.appId, name: app.name, version: app.version,
+        type: app.type, source: app.source, location: app.location
+      })
+    }
+    if (appList) appList.positionViewAtBeginning()
+  }
 
   Process {
     id: inventoryProcess
@@ -429,7 +446,7 @@ Item {
           height: Math.max(140, parent.height - heading.height - actionBar.height - searchBox.height - statusLine.implicitHeight - parent.spacing * 4)
           clip: true
           spacing: Style.space(6)
-          model: appsModel
+          model: visibleAppsModel
           boundsBehavior: Flickable.StopAtBounds
           delegate: Rectangle {
             required property string appId
@@ -438,10 +455,8 @@ Item {
             required property string type
             required property string source
             required property string location
-            readonly property bool rowVisible: root.matches({name: name, appId: appId, type: type, source: source, location: location})
             width: appList.width
-            height: rowVisible ? Style.space(76) : 0
-            visible: rowVisible
+            height: Style.space(76)
             color: Util.alpha(root.foreground, 0.035)
             border.color: Util.alpha(root.foreground, 0.12)
             border.width: 1
