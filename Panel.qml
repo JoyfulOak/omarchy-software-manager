@@ -201,7 +201,7 @@ Item {
         type: app.type, source: app.source, location: app.location
       })
     }
-    if (appList) appList.positionViewAtBeginning()
+    Qt.callLater(function() { appList.positionViewAtBeginning() })
   }
 
   Process {
